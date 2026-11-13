@@ -136,15 +136,20 @@ def select_calculator(state:State, calculator:str) -> Page:
         return gauge_calculator(state)
     elif calculator == 'Stitch Counter':
         return stitch_counter(state)
-   
+    
+@route
+def calculate_increase(state:State) -> Page:
+   return yarn_calculator(state)
+
 @route
 def yarn_calculator(state:State) -> Page:
     state.current_page = 'Yarn Calculator'
     return Page(state,
                 [Header('Yarn Calculator'),
-                        
-                
-                change_text_align(Link('Home', 'index'), right)
+                'Increase Count: ',
+                 '\n',
+                Button('Calculate', 'calculate_increase'), 
+                change_text_align(Link('Home', 'index'), 'right')
             ])
 
 @route
@@ -170,35 +175,42 @@ def money_calculator(state:State) -> Page:
                  Header('Select a project:', 3),
                  SelectBox("project", saved_projects),
                  '\n' + 'Total yards: ',
-                 TextBox('total_yards'),
-                 '\n' + 'Crochet time: ',
-                 TextBox('crochet_time'),
-                 '\n']
-    #if len(state.calculator_results) == 0:
-    '''
-     'Total Skeins = ' + str(state.calculator_results[0]),
-     'Project Cost = ' + str(state.calculator_results[1]),
-     Button('Calculate', 'calculate_money'),
-     'Project Price = ' + str(state.calculator_results[2]),
-     '\n',
-     change_text_align(Link('Home', 'index'), right)
-    '''
-        
+                 TextBox('total_yards')
+                   ]
+                 
+    if len(state.calculator_results) >= 1:   
+     return_list.append('Total Skeins = ' + str(state.calculator_results[0]))
+     return_list.append('Project Cost = ' + str(state.calculator_results[1]))
+    
+    return_list.append('\n' + 'Crochet time: ')
+    return_list.append(TextBox('crochet_time'))
+    return_list.append('\n')
+    return_list.append(Button('Calculate', 'calculate_money')) 
+    return_list.append('\n')
+     
+    if len(state.calculator_results) == 2:
+     return_list.append('Project Price = ' + str(state.calculator_results[2]))
+    
+    
+     change_text_align(Link('Home', 'index'), 'right')
+    
     return Page(state, return_list)
                  
+@route
+def calculate_gague(state:State, stitch_count:int) -> Page:
+    return gauge_calculator(state)
 
 @route
 def gauge_calculator(state:State) -> Page:
     state.current_page = 'Gague Calculator'
     return Page(state,
                 [Header('Gague Calculator'),
-                 
-                 
-                
-                change_text_align(Link('Home', 'index'), right)
+                 TextBox('stitch_count'),
+                change_text_align(Link('Home', 'index'), 'right')
             ])
-#@route
-#def add_stitch(state:State) -> 
+@route
+def add_stitch(state:State) -> Page:
+    return stitch_counter(state)
 
 @route
 def stitch_counter(state:State) -> Page:
@@ -208,15 +220,14 @@ def stitch_counter(state:State) -> Page:
                  Header('Stitch Count: ', 2),
                  '\n',
                  Button('+1', 'add_stitch'),
-                 Button('-1', 'subtract_stitch'),
+                 Button('-1', 'add_stitch'),
                  '\n',
                  Header('Row Count: ', 2),
                  '\n',
-                 Button('+1', 'add_row'),
-                 Button('-1', 'subtract_row'),
-                 change_text_align(Link('Home', 'index'), right)
+                 Button('+1', 'add_stitch'),
+                 Button('-1', 'add_stitch'),
+                 change_text_align(Link('Home', 'index'), 'right')
         ])
 
 
 start_server(State([], '', [], 0.0))
-
